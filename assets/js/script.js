@@ -102,3 +102,32 @@ var quizzArr = [
   },
 ];
 
+function navigate(currentID, targetID) {
+  document.getElementById(currentID).classList.remove("visible");
+  document.getElementById(targetID).classList.add("hidden");
+}
+
+function answerSelection(event) {
+  console.log(event);
+  console.log("e" + typeof event);
+  console.log("e.k" + typeof event.key);
+
+  switch (event.key) {
+    case "1":
+      console.log("entered case " + event.key);
+      break;
+    case "2":
+      console.log("entered case " + event.key);
+      break;
+    case "3":
+      console.log("entered case " + event.key);
+      break;
+    case "4":
+      console.log("entered case " + event.key);
+      break;
+    default:
+      console.log("error");
+  }
+}
+
+window.addEventListener("keydown", answerSelection);
