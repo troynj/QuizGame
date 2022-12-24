@@ -102,6 +102,12 @@ var quizArr = [
   },
 ];
 
+var score = {
+    correct: 0,
+    incorrect: 0,
+    //timeLeft: 0,
+}
+
 function setScreen(event) {
   var toFind = "visible";
   var currentElement = event.target;
@@ -130,10 +136,10 @@ function getScreen(currentID, targetID) {
   document.getElementById(targetID).classList.remove("hidden");
   document.getElementById(targetID).classList.add("visible");
 
-  playQuiz();
+  nextQuestion();
 }
 
-function playQuiz() {
+function nextQuestion() {
     var questionEl = document.getElementById("question")
     //var questionListEl = document.getElementById("answer-list")
 
@@ -153,22 +159,58 @@ function answerSelection(event) {
   console.log("e" + typeof event);
   console.log("e.k" + typeof event.key);
 
+  var currentQuestion = document.getElementById("question").textContent
+  var currentAns;
+  var i = 0;
+  do {
+
+    i++
+  } while (quizArr[i].question !== currentQuestion && i < quizArr.length)
+
   switch (event.key) {
     case "1":
       console.log("entered case " + event.key);
+      if (Object.values(quizArr[i].answer)[event.key-1]) {
+        score.correct++
+        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+      }
+      else {
+        score.incorrect++
+      }
       break;
     case "2":
-      console.log("entered case " + event.key);
+        if (Object.values(quizArr[i].answer)[event.key-1]) {
+            score.correct++
+            //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+          }
+          else {
+            score.incorrect++
+          }
       break;
     case "3":
       console.log("entered case " + event.key);
+      if (Object.values(quizArr[i].answer)[event.key-1]) {
+        score.correct++
+        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+      }
+      else {
+        score.incorrect++
+      }
       break;
     case "4":
       console.log("entered case " + event.key);
+      if (Object.values(quizArr[i].answer)[event.key-1]) {
+        score.correct++
+        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+      }
+      else {
+        score.incorrect++
+      }
       break;
     default:
       console.log("error");
   }
+
 }
 
 window.addEventListener("keydown", answerSelection);
