@@ -1,4 +1,4 @@
-var quizzArr = [
+var quizArr = [
   {
     //1
     question: "Which is a coding language?",
@@ -129,9 +129,24 @@ function getScreen(currentID, targetID) {
   document.getElementById(currentID).classList.add("hidden");
   document.getElementById(targetID).classList.remove("hidden");
   document.getElementById(targetID).classList.add("visible");
+
+  playQuiz();
 }
 
-function startQuiz() {}
+function playQuiz() {
+    var questionEl = document.getElementById("question")
+    //var questionListEl = document.getElementById("answer-list")
+
+    for(var i = 0; i < quizArr.length; i++) {
+    questionEl.textContent = quizArr[i].question
+
+    var ansArr = Object.keys(quizArr[i].answer)
+    ansArr.forEach((el, index) => {
+        document.getElementById("a" + (index +1)).textContent = el;
+    })
+    }
+
+}
 
 function answerSelection(event) {
   console.log(event);
@@ -157,4 +172,11 @@ function answerSelection(event) {
 }
 
 window.addEventListener("keydown", answerSelection);
-document.querySelectorAll("button").addEventListener("click", setScreen);
+buttonUtility();
+function buttonUtility() {
+    var myNodeList = document.querySelectorAll("button")
+
+    myNodeList.forEach((el) => {
+        el.addEventListener("click", setScreen);
+    })
+}
