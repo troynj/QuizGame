@@ -105,10 +105,11 @@ var quizArr = [
 var score = {
   correct: 0,
   incorrect: 0,
-  //timeLeft: 0,
+  timeLeft: 0,
 };
 
-var secondsLeft = 1500;
+var secondsLeft = 2000;
+var gameOver = false;
 
 function setScreen(event) {
   var toFind = "visible";
@@ -149,12 +150,14 @@ function setTimer() {
   var timerID = setInterval(function () {
     secondsLeft--;
     if (secondsLeft < 10) {
-      timerEl.textContent = "0:0" + (secondsLeft/100).toFixed(2);
+      timerEl.textContent = "0:0" + (secondsLeft / 100).toFixed(2);
       timerEl.setAttribute("style", "color:red");
-    } else timerEl.textContent = "0:" + (secondsLeft/100).toFixed(2);
+    } else timerEl.textContent = "0:" + (secondsLeft / 100).toFixed(2);
 
-    if (!secondsLeft) {
+    if (!secondsLeft || gameOver) {
       clearInterval(timerID);
+      getScreen("quiz", "player-info");
+      displayResults();
     }
   }, 10);
 }
@@ -174,6 +177,7 @@ function answerSelection(event) {
   // console.log(event.key);
   // console.log("e" + typeof event.key);
   // console.log(event.target.getAttribute('id').split(''));
+  var validSelection = false;
 
   var currentQuestion = document.getElementById("question").textContent;
 
@@ -185,8 +189,7 @@ function answerSelection(event) {
   }
 
   // event.target
-var userSelection = event.key || event.target.getAttribute('id').split('')[1]
-
+  var userSelection = event.key || event.target.getAttribute("id").split("")[1];
 
   switch (userSelection) {
     case "1":
@@ -197,6 +200,7 @@ var userSelection = event.key || event.target.getAttribute('id').split('')[1]
       } else {
         score.incorrect++;
       }
+      validSelection = true;
       break;
     case "2":
       if (Object.values(quizArr[i].answer)[userSelection - 1]) {
@@ -205,6 +209,7 @@ var userSelection = event.key || event.target.getAttribute('id').split('')[1]
       } else {
         score.incorrect++;
       }
+      validSelection = true;
       break;
     case "3":
       console.log("entered case " + event.key);
@@ -214,6 +219,7 @@ var userSelection = event.key || event.target.getAttribute('id').split('')[1]
       } else {
         score.incorrect++;
       }
+      validSelection = true;
       break;
     case "4":
       console.log("entered case " + event.key);
@@ -223,25 +229,63 @@ var userSelection = event.key || event.target.getAttribute('id').split('')[1]
       } else {
         score.incorrect++;
       }
+      validSelection = true;
       break;
     default:
       console.log("error");
   }
 
   console.log("Score: " + score.correct + ", " + score.incorrect);
-  if (i + 1 < quizArr.length) nextQuestion(i + 1);
-  else getScreen("quiz", "player-info");
+
+  if (validSelection) {
+    if (i + 1 < quizArr.length) {
+      nextQuestion(i + 1);
+    } else {
+      getScreen("quiz", "player-info");
+      score.timeLeft = secondsLeft/100;
+      gameOver = true;
+    }
+  }
+}
+
+function displayResults() {
+  var userScore = score.timeLeft * (score.correct / (score.incorrect + 1));
+  userScore = userScore.toFixed(3);
+
+console.log("THis SHOulD be Your SCorE :::=", userScore)
+console.log("THis SHOulD be Your SCorE :::=", userScore.toString())
+  var resultsEl = document.getElementById("results")
+  var userScoreEl = document.getElementById("userScore")
+  userScoreEl.textContent = "Your Score " + userScore.toString();
+
+  for(var values in score) {
+    var tempEl = document.createElement('p');
+    tempEl.textContent = values + ": " + score[values];
+    resultsEl.appendChild(tempEl);
+  }
+
+
+
+   var timerEl = document.getElementById("timer");
+   timerEl.classList.replace("visible", "invisible");
+
+  window.removeEventListener("keydown", answerSelection);
+document.getElementById("a1").removeEventListener("click", answerSelection);
+document.getElementById("a2").removeEventListener("click", answerSelection);
+document.getElementById("a3").removeEventListener("click", answerSelection);
+document.getElementById("a4").removeEventListener("click", answerSelection);
+
 }
 
 window.addEventListener("keydown", answerSelection);
-document.getElementById("a1").addEventListener("click", answerSelection)
-document.getElementById("a2").addEventListener("click", answerSelection)
-document.getElementById("a3").addEventListener("click", answerSelection)
-document.getElementById("a4").addEventListener("click", answerSelection)
+document.getElementById("a1").addEventListener("click", answerSelection);
+document.getElementById("a2").addEventListener("click", answerSelection);
+document.getElementById("a3").addEventListener("click", answerSelection);
+document.getElementById("a4").addEventListener("click", answerSelection);
 
 function buttonUtility() {
   var myNodeList = document.querySelectorAll("button");
-  
+
   myNodeList.forEach((el) => {
     el.addEventListener("click", setScreen);
   });
