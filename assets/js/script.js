@@ -136,21 +136,21 @@ function getScreen(currentID, targetID) {
   document.getElementById(targetID).classList.remove("hidden");
   document.getElementById(targetID).classList.add("visible");
 
-  nextQuestion();
+  if (document.getElementById(targetID).getAttribute('id') === "quiz") {nextQuestion(0)}
+
+  
 }
 
-function nextQuestion() {
+function nextQuestion(i) {
+    console.log("entered", i)
     var questionEl = document.getElementById("question")
     //var questionListEl = document.getElementById("answer-list")
 
-    for(var i = 0; i < quizArr.length; i++) {
     questionEl.textContent = quizArr[i].question
 
     var ansArr = Object.keys(quizArr[i].answer)
     ansArr.forEach((el, index) => {
-        document.getElementById("a" + (index +1)).textContent = el;
-    })
-    }
+        document.getElementById("a" + (index +1)).textContent = el;})
 
 }
 
@@ -160,12 +160,15 @@ function answerSelection(event) {
   console.log("e.k" + typeof event.key);
 
   var currentQuestion = document.getElementById("question").textContent
-  var currentAns;
+ 
+  console.log("cur q" ,currentQuestion)
+  console.log("quizArr[i].question: ", quizArr[0].question)
   var i = 0;
-  do {
-
+ while (quizArr[i].question !== currentQuestion && i < quizArr.length) {
     i++
-  } while (quizArr[i].question !== currentQuestion && i < quizArr.length)
+    console.log("HERE? " , i)
+ }
+
 
   switch (event.key) {
     case "1":
@@ -210,6 +213,11 @@ function answerSelection(event) {
     default:
       console.log("error");
   }
+
+  console.log("Score: " + score.correct + ", " + score.incorrect)
+  if(i + 1 < quizArr.length)
+  nextQuestion(i + 1);
+  else getScreen("quiz", "player-info" )
 
 }
 
