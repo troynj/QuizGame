@@ -131,10 +131,8 @@ function setScreen(event) {
 }
 
 function getScreen(currentID, targetID) {
-  document.getElementById(currentID).classList.remove("visible");
-  document.getElementById(currentID).classList.add("hidden");
-  document.getElementById(targetID).classList.remove("hidden");
-  document.getElementById(targetID).classList.add("visible");
+  document.getElementById(currentID).classList.replace("visible", "hidden");
+  document.getElementById(targetID).classList.replace("hidden", "visible");
 
   if (document.getElementById(targetID).getAttribute('id') === "quiz") {nextQuestion(0)}
 
