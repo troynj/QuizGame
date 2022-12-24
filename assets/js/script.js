@@ -103,10 +103,12 @@ var quizArr = [
 ];
 
 var score = {
-    correct: 0,
-    incorrect: 0,
-    //timeLeft: 0,
-}
+  correct: 0,
+  incorrect: 0,
+  //timeLeft: 0,
+};
+
+var secondsLeft = 1500;
 
 function setScreen(event) {
   var toFind = "visible";
@@ -131,100 +133,117 @@ function setScreen(event) {
 }
 
 function getScreen(currentID, targetID) {
-  document.getElementById(currentID).classList.replace("visible", "hidden");
-  document.getElementById(targetID).classList.replace("hidden", "visible");
+  document.getElementById(currentID).classList.replace("visible", "invisible");
+  document.getElementById(targetID).classList.replace("invisible", "visible");
 
-  if (document.getElementById(targetID).getAttribute('id') === "quiz") {nextQuestion(0)}
+  if (document.getElementById(targetID).getAttribute("id") === "quiz") {
+    setTimer();
+    nextQuestion(0);
+  }
+}
 
-  
+function setTimer() {
+  var timerEl = document.getElementById("timer");
+  timerEl.classList.replace("invisible", "visible");
+
+  var timerID = setInterval(function () {
+    secondsLeft--;
+    if (secondsLeft < 10) {
+      timerEl.textContent = "0:0" + (secondsLeft/100).toFixed(2);
+      timerEl.setAttribute("style", "color:red");
+    } else timerEl.textContent = "0:" + (secondsLeft/100).toFixed(2);
+
+    if (!secondsLeft) {
+      clearInterval(timerID);
+    }
+  }, 10);
 }
 
 function nextQuestion(i) {
-    console.log("entered", i)
-    var questionEl = document.getElementById("question")
-    //var questionListEl = document.getElementById("answer-list")
+  console.log("entered", i);
+  var questionEl = document.getElementById("question");
+  questionEl.textContent = quizArr[i].question;
 
-    questionEl.textContent = quizArr[i].question
-
-    var ansArr = Object.keys(quizArr[i].answer)
-    ansArr.forEach((el, index) => {
-        document.getElementById("a" + (index +1)).textContent = el;})
-
+  var ansArr = Object.keys(quizArr[i].answer);
+  ansArr.forEach((el, index) => {
+    document.getElementById("a" + (index + 1)).textContent = el;
+  });
 }
 
 function answerSelection(event) {
-  console.log(event);
-  console.log("e" + typeof event);
-  console.log("e.k" + typeof event.key);
+  // console.log(event.key);
+  // console.log("e" + typeof event.key);
+  // console.log(event.target.getAttribute('id').split(''));
 
-  var currentQuestion = document.getElementById("question").textContent
- 
-  console.log("cur q" ,currentQuestion)
-  console.log("quizArr[i].question: ", quizArr[0].question)
+  var currentQuestion = document.getElementById("question").textContent;
+
+  // console.log("cur q", currentQuestion);
+  // console.log("quizArr[i].question: ", quizArr[0].question);
   var i = 0;
- while (quizArr[i].question !== currentQuestion && i < quizArr.length) {
-    i++
-    console.log("HERE? " , i)
- }
+  while (quizArr[i].question !== currentQuestion && i < quizArr.length) {
+    i++;
+  }
+
+  // event.target
+var userSelection = event.key || event.target.getAttribute('id').split('')[1]
 
 
-  switch (event.key) {
+  switch (userSelection) {
     case "1":
       console.log("entered case " + event.key);
-      if (Object.values(quizArr[i].answer)[event.key-1]) {
-        score.correct++
+      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+        score.correct++;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
-      }
-      else {
-        score.incorrect++
+      } else {
+        score.incorrect++;
       }
       break;
     case "2":
-        if (Object.values(quizArr[i].answer)[event.key-1]) {
-            score.correct++
-            //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
-          }
-          else {
-            score.incorrect++
-          }
+      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+        score.correct++;
+        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+      } else {
+        score.incorrect++;
+      }
       break;
     case "3":
       console.log("entered case " + event.key);
-      if (Object.values(quizArr[i].answer)[event.key-1]) {
-        score.correct++
+      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+        score.correct++;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
-      }
-      else {
-        score.incorrect++
+      } else {
+        score.incorrect++;
       }
       break;
     case "4":
       console.log("entered case " + event.key);
-      if (Object.values(quizArr[i].answer)[event.key-1]) {
-        score.correct++
+      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+        score.correct++;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
-      }
-      else {
-        score.incorrect++
+      } else {
+        score.incorrect++;
       }
       break;
     default:
       console.log("error");
   }
 
-  console.log("Score: " + score.correct + ", " + score.incorrect)
-  if(i + 1 < quizArr.length)
-  nextQuestion(i + 1);
-  else getScreen("quiz", "player-info" )
-
+  console.log("Score: " + score.correct + ", " + score.incorrect);
+  if (i + 1 < quizArr.length) nextQuestion(i + 1);
+  else getScreen("quiz", "player-info");
 }
 
 window.addEventListener("keydown", answerSelection);
-buttonUtility();
-function buttonUtility() {
-    var myNodeList = document.querySelectorAll("button")
+document.getElementById("a1").addEventListener("click", answerSelection)
+document.getElementById("a2").addEventListener("click", answerSelection)
+document.getElementById("a3").addEventListener("click", answerSelection)
+document.getElementById("a4").addEventListener("click", answerSelection)
 
-    myNodeList.forEach((el) => {
-        el.addEventListener("click", setScreen);
-    })
+function buttonUtility() {
+  var myNodeList = document.querySelectorAll("button");
+  
+  myNodeList.forEach((el) => {
+    el.addEventListener("click", setScreen);
+  });
 }
+buttonUtility();

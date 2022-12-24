@@ -42,7 +42,14 @@ nav li:hover {
   color: blue;
 }
 
-.hidden {
+#quiz li {
+    line-height: 150%;
+}
+
+#quiz li:hover {
+    font-weight: bold;
+}
+.invisible {
   display: none;
 }
 

@@ -12,13 +12,14 @@
     <head>
         <nav>
             <i class="fa fa-home" style="font-size:48px"></i>
+            <h3 id="timer" class="invisible"></h3>
             <ul>
                 <li>Leader Board</li>
                 <li>How to Play</li>
             </ul>
         </nav>
     </head>
-      <section id="controls" class="hidden">
+      <section id="controls" class="invisible">
         <h2>How to Play</h2>
     </section>
 
@@ -29,7 +30,7 @@
             <button jump-to="quiz">PLAY</button>
         </section>
 
-        <section id="quiz" class="hidden">
+        <section id="quiz" class="invisible">
             <h3 id="question"></h3>
             <ol id="answer-list">
                 <li id="a1"></li>
@@ -41,14 +42,14 @@
         </section>
   
 
-    <section id="player-info" class="hidden">
+    <section id="player-info" class="invisible">
         <form >
             <input placeholder="name" id="name" />
             <button id="submit">Submit</button>
           </form>
     </section>
 
-    <section id="leader-board" class="hidden">
+    <section id="leader-board" class="invisible">
         <h2>Leader Board</h2>
 
         <ol id="score-list"></ol>
