@@ -102,12 +102,36 @@ var quizzArr = [
   },
 ];
 
-function navigate(currentID, targetID) {
+function setScreen(event) {
+  var toFind = "visible";
+  var currentElement = event.target;
+
+  while (
+    !Object.values(currentElement.classList).includes(toFind) &&
+    currentElement.tagName !== "HTML"
+  ) {
+    console.log("currentEl.tagname = " + currentElement.tagName);
+    currentElement = currentElement.parentElement;
+
+    if (currentElement.tagName == "HTML") {
+      console.log("Cant Find Proper Parent");
+      break;
+    }
+  }
+  getScreen(
+    currentElement.getAttribute("id"),
+    event.target.getAttribute("jump-to")
+  );
+}
+
+function getScreen(currentID, targetID) {
   document.getElementById(currentID).classList.remove("visible");
   document.getElementById(currentID).classList.add("hidden");
   document.getElementById(targetID).classList.remove("hidden");
   document.getElementById(targetID).classList.add("visible");
 }
+
+function startQuiz() {}
 
 function answerSelection(event) {
   console.log(event);
@@ -132,47 +156,5 @@ function answerSelection(event) {
   }
 }
 
-function setScreen(event) {
-  // var takeMeTo = event.target.getAttribute('takeMeTo');
-
-  // console.log("getAtt: " + event.target.getAttribute('takemeto'))
-  // console.log("takeMeTo = " + takeMeTo)
-  var toFind = "visible";
-  //if multiple buttons on page use id or event.target
-  var currentElement = event.target;
-  //    console.log("currentElement.classlist before loop")
-  //    console.log(currentElement.classList)
-  //    var counter = 0;
-
-  //x = currentElement.classlist is an object
-  //y = Object.values(x) takes values and turns into array
-  // y.includes(toFind) uses array method to find if toFind is part of the classlist
-  //if it is, stop loop
-  //or stop loop if loop reached html parent
-  while (
-    !Object.values(currentElement.classList).includes(toFind) &&
-    currentElement.tagName !== "HTML"
-  ) {
-    // counter++
-    // console.log("counter: " + counter)
-    // console.log("o.ent(CE.CL) = " + Object.values(currentElement.classList).includes(toFind))
-    //console.log("cur el id = " + currentElement.getAttribute('id'))
-
-    console.log("currentEl.tagname = " + currentElement.tagName);
-    currentElement = currentElement.parentElement;
-
-    if (currentElement.tagName == "HTML") {
-      console.log("Cant Find Proper Parent");
-      break;
-    }
-  }
-  console.log("Stopped at ", currentElement);
-
-  navigate(
-    currentElement.getAttribute("id"),
-    event.target.getAttribute("jump-to")
-  );
-}
-
 window.addEventListener("keydown", answerSelection);
-document.addEventListener("click", setScreen);
+document.querySelectorAll("button").addEventListener("click", setScreen);
