@@ -17,33 +17,36 @@
             </ul>
         </nav>
     </head>
-      <section class="modal">
+      <section id="controls" class="hidden">
         <h2>How to Play</h2>
     </section>
 
-        <section class="Start">
+        <section id="landing-page" class="visible">
             <h1>Quiz Game</h1>
             <h6>Test your coding knowledge!</h6>
 
-            <button>PLAY</button>
+            <button jump-to="quiz">PLAY</button>
         </section>
 
-        <section class="Quiz">
+        <section id="quiz" class="hidden">
+
+            <h2>QUIZ SECTION</h2>
+            
             
         </section>
   
 
-    <section id="playerInfo" class="hidden">
+    <section id="player-info" class="hidden">
         <form >
             <input placeholder="name" id="name" />
             <button id="submit">Submit</button>
           </form>
     </section>
 
-    <section id="leaderBoard" class="hidden">
+    <section id="leader-board" class="hidden">
         <h2>Leader Board</h2>
 
-        <ol id="scoreList"></ol>
+        <ol id="score-list"></ol>
     </section>
 
 </body>
