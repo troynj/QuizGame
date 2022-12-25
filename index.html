@@ -11,11 +11,10 @@
 <body>
     <head>
         <nav>
-            <i class="fa fa-home" style="font-size:48px"></i>
-            <h3 id="timer" class="invisible"></h3>
+            <i jump-to="landing-page" class="fa fa-home" style="font-size:48px"></i>
             <ul>
-                <li>Leader Board</li>
-                <li>How to Play</li>
+                <li jump-to="leader-board" id="navlink-lb">Leader Board</li>
+                <li jump-to="how-to-play" id="navlink-htp">How to Play</li>
             </ul>
         </nav>
     </head>
@@ -31,6 +30,7 @@
         </section>
 
         <section id="quiz" class="invisible">
+            <h3 id="timer" class="invisible"></h3>
             <h3 id="question"></h3>
             <ol id="answer-list">
                 <li id="a1"></li>
@@ -38,6 +38,7 @@
                 <li id="a3"></li>
                 <li id="a4"></li>
             </ol>
+            <p id="feedback"></p>
             
         </section>
   

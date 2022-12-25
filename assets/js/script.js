@@ -108,39 +108,70 @@ var score = {
   timeLeft: 0,
 };
 
+var answerFeedbackTimer = 3000
 var secondsLeft = 2000;
 var gameOver = false;
 
-function setScreen(event) {
-  var toFind = "visible";
-  var currentElement = event.target;
-
-  while (
-    !Object.values(currentElement.classList).includes(toFind) &&
-    currentElement.tagName !== "HTML"
-  ) {
-    console.log("currentEl.tagname = " + currentElement.tagName);
-    currentElement = currentElement.parentElement;
-
-    if (currentElement.tagName == "HTML") {
-      console.log("Cant Find Proper Parent");
-      break;
-    }
+function setScreen (event) {
+  var tempStr = event.target.getAttribute('id');
+  if (tempStr && tempStr.includes('navlink')) {
+    console.log("IT WORKS")
   }
+
+  var visibleEl = document.querySelector('.visible')
+
   getScreen(
-    currentElement.getAttribute("id"),
+    visibleEl.getAttribute("id"),
     event.target.getAttribute("jump-to")
   );
+
 }
+
+
+// function setScreen(event) {
+//   var toFind = "visible";
+//   var currentElement = event.target;
+
+//   while (
+
+//     //find the div w/ .visible
+// //   !Object.values(currentElement.classList).includes(toFind) &&
+//     currentElement.tagName !== "HTML"
+//   ) {
+//     //console.log("currentEl.tagname = " + currentElement.tagName);
+//     currentElement = currentElement.parentElement;
+
+//     if (currentElement.tagName == "HTML") {
+//       console.log("Cant Find Proper Parent");
+//       break;
+//     }
+//   }
+
+//   //turn off .visible
+//   //use button attribute to know what .visible to turn on
+//   getScreen(
+//     currentElement.getAttribute("id"),
+//     event.target.getAttribute("jump-to")
+//   );
+// }
 
 function getScreen(currentID, targetID) {
   document.getElementById(currentID).classList.replace("visible", "invisible");
   document.getElementById(targetID).classList.replace("invisible", "visible");
 
+  if (document.getElementById(currentID).getAttribute('id') === "quiz") {
+    gameOver = true;
+    score.correct = 0;
+    score.incorrect = 0;
+    score.timeLeft = 0;
+  }
+  
   if (document.getElementById(targetID).getAttribute("id") === "quiz") {
     setTimer();
     nextQuestion(0);
   }
+
+ 
 }
 
 function setTimer() {
@@ -178,7 +209,7 @@ function answerSelection(event) {
   // console.log("e" + typeof event.key);
   // console.log(event.target.getAttribute('id').split(''));
   var validSelection = false;
-
+  var answerToken = new Boolean;
   var currentQuestion = document.getElementById("question").textContent;
 
   // console.log("cur q", currentQuestion);
@@ -196,18 +227,22 @@ function answerSelection(event) {
       console.log("entered case " + event.key);
       if (Object.values(quizArr[i].answer)[userSelection - 1]) {
         score.correct++;
+        answerToken = true;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
         score.incorrect++;
+        answerToken = false;
       }
       validSelection = true;
       break;
     case "2":
       if (Object.values(quizArr[i].answer)[userSelection - 1]) {
         score.correct++;
+        answerToken = true;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
         score.incorrect++;
+        answerToken = false;
       }
       validSelection = true;
       break;
@@ -215,19 +250,24 @@ function answerSelection(event) {
       console.log("entered case " + event.key);
       if (Object.values(quizArr[i].answer)[userSelection - 1]) {
         score.correct++;
+        answerToken = true;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
         score.incorrect++;
+        answerToken = false;
       }
+      
       validSelection = true;
       break;
     case "4":
       console.log("entered case " + event.key);
       if (Object.values(quizArr[i].answer)[userSelection - 1]) {
         score.correct++;
+        answerToken = true;
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
         score.incorrect++;
+        answerToken = false;
       }
       validSelection = true;
       break;
@@ -240,6 +280,7 @@ function answerSelection(event) {
   if (validSelection) {
     if (i + 1 < quizArr.length) {
       nextQuestion(i + 1);
+      setAnswerFeedbackTimer(answerToken);
     } else {
       getScreen("quiz", "player-info");
       score.timeLeft = secondsLeft/100;
@@ -248,8 +289,36 @@ function answerSelection(event) {
   }
 }
 
+function setAnswerFeedbackTimer(answerToken) {
+
+  var timerID = setInterval(function() {
+  var feedbackEl = document.getElementById('feedback');
+
+
+answerFeedbackTimer--;
+if (answerToken) {
+  feedbackEl.textContent = "Correct!";
+  feedbackEl.removeAttribute("color");
+  feedbackEl.setAttribute("style", "color:green");
+}
+else {
+  feedbackEl.textContent = "Incorrect!";
+  feedbackEl.removeAttribute("color");
+  feedbackEl.setAttribute("style", "color:red");
+}
+
+if (answerFeedbackTimer === 0) {
+clearInterval(timerID)
+feedbackEl.textContent ='';
+}
+
+  }, 1000)
+ 
+
+}
+
 function displayResults() {
-  var userScore = score.timeLeft * (score.correct / (score.incorrect + 1));
+  var userScore = score.timeLeft + (score.correct / (score.incorrect + 1));
   userScore = userScore.toFixed(3);
 
 console.log("THis SHOulD be Your SCorE :::=", userScore)
@@ -290,4 +359,7 @@ function buttonUtility() {
     el.addEventListener("click", setScreen);
   });
 }
+
+  document.getElementById("navlink-lb").addEventListener("click", setScreen)
+
 buttonUtility();
