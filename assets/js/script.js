@@ -72,7 +72,7 @@ var quizArr = [
   {
     //8
     question:
-      "Tho created the type of computer that modern humans use today for coding purposes?",
+      "Who created the type of computer that modern humans use today for coding purposes?",
     answer: {
       "The Aliens": false,
       "The Dinosaurs": false,
@@ -108,70 +108,50 @@ var score = {
   timeLeft: 0,
 };
 
-var answerFeedbackTimer = 3000
-var secondsLeft = 2000;
+var driveWEl = {
+  jump_from: "",
+  jump_to: "",
+};
+var answerFeedbackTimer = 3000;
+var secondsLeft = 200;
 var gameOver = false;
 
-function setScreen (event) {
-  var tempStr = event.target.getAttribute('id');
-  if (tempStr && tempStr.includes('navlink')) {
-    console.log("IT WORKS")
-  }
+function setScreen(event) {
+  var visibleEl = document.querySelector(".visible");
 
-  var visibleEl = document.querySelector('.visible')
+  (driveWEl.jump_from = visibleEl.getAttribute("id")),
+    (driveWEl.jump_to = event.target.getAttribute("jump_to"));
 
-  getScreen(
-    visibleEl.getAttribute("id"),
-    event.target.getAttribute("jump-to")
-  );
-
+  getScreen();
 }
 
+function getScreen() {
+  var jump_fromEl = document.getElementById(driveWEl.jump_from);
+  var jump_toEl = document.getElementById(driveWEl.jump_to);
+  var jump_fromID = jump_fromEl.getAttribute("id");
+  var jump_toID = jump_toEl.getAttribute("id") ;
 
-// function setScreen(event) {
-//   var toFind = "visible";
-//   var currentElement = event.target;
+  jump_fromEl.classList.replace("visible", "invisible");
+  jump_toEl.classList.replace("invisible", "visible");
 
-//   while (
-
-//     //find the div w/ .visible
-// //   !Object.values(currentElement.classList).includes(toFind) &&
-//     currentElement.tagName !== "HTML"
-//   ) {
-//     //console.log("currentEl.tagname = " + currentElement.tagName);
-//     currentElement = currentElement.parentElement;
-
-//     if (currentElement.tagName == "HTML") {
-//       console.log("Cant Find Proper Parent");
-//       break;
-//     }
-//   }
-
-//   //turn off .visible
-//   //use button attribute to know what .visible to turn on
-//   getScreen(
-//     currentElement.getAttribute("id"),
-//     event.target.getAttribute("jump-to")
-//   );
-// }
-
-function getScreen(currentID, targetID) {
-  document.getElementById(currentID).classList.replace("visible", "invisible");
-  document.getElementById(targetID).classList.replace("invisible", "visible");
-
-  if (document.getElementById(currentID).getAttribute('id') === "quiz") {
+  if (jump_fromID === "quiz") {
     gameOver = true;
-    score.correct = 0;
-    score.incorrect = 0;
-    score.timeLeft = 0;
   }
-  
-  if (document.getElementById(targetID).getAttribute("id") === "quiz") {
+
+  if (jump_toID === "quiz") {
     setTimer();
     nextQuestion(0);
   }
 
- 
+  if(jump_toID === "player_info"){
+
+    if (secondsLeft > 0 && (score.correct + score.incorrect !== quizArr.length)) {
+      score.correct = 0;
+      score.incorrect = 0;
+      score.timeLeft = 0;
+    }
+    displayResults()
+  }
 }
 
 function setTimer() {
@@ -181,14 +161,20 @@ function setTimer() {
   var timerID = setInterval(function () {
     secondsLeft--;
     if (secondsLeft < 10) {
-      timerEl.textContent = "0:0" + (secondsLeft / 100).toFixed(2);
+      timerEl.textContent = "0:0" + (secondsLeft/100).toFixed(2);
       timerEl.setAttribute("style", "color:red");
-    } else timerEl.textContent = "0:" + (secondsLeft / 100).toFixed(2);
+    } else timerEl.textContent = "0:" + (secondsLeft/100).toFixed(2);
 
-    if (!secondsLeft || gameOver) {
+    if (secondsLeft === 0 || gameOver) {
+      console.log("enteredHERE");
       clearInterval(timerID);
-      getScreen("quiz", "player-info");
-      displayResults();
+      removeEars();
+      driveWEl.jump_from = "quiz";
+      driveWEl.jump_to = "player_info";
+      score.timeLeft = secondsLeft / 100;
+      secondsLeft = 0;
+      gameOver = true;
+      getScreen();
     }
   }, 10);
 }
@@ -209,65 +195,81 @@ function answerSelection(event) {
   // console.log("e" + typeof event.key);
   // console.log(event.target.getAttribute('id').split(''));
   var validSelection = false;
-  var answerToken = new Boolean;
+  //var answerToken = new Boolean();
   var currentQuestion = document.getElementById("question").textContent;
 
   // console.log("cur q", currentQuestion);
   // console.log("quizArr[i].question: ", quizArr[0].question);
-  var i = 0;
-  while (quizArr[i].question !== currentQuestion && i < quizArr.length) {
-    i++;
+  var questionIndex = 0;
+  while (
+    quizArr[questionIndex].question !== currentQuestion &&
+    questionIndex < quizArr.length
+  ) {
+    questionIndex++;
   }
-
   // event.target
+  var answerArr = Object.values(quizArr[questionIndex].answer);
+  console.log(answerArr);
   var userSelection = event.key || event.target.getAttribute("id").split("")[1];
 
   switch (userSelection) {
     case "1":
-      console.log("entered case " + event.key);
-      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
-        score.correct++;
-        answerToken = true;
-        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+      console.log("entered case " + userSelection);
+      if (answerArr[userSelection - 1]) {
+        ++score.correct;
+        //answerToken = true;
+        console.log(answerArr[userSelection - 1]);
+        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1]);
       } else {
+        console.log("Entered False");
         score.incorrect++;
         answerToken = false;
       }
       validSelection = true;
       break;
     case "2":
-      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+      console.log("entered case " + userSelection);
+      if (answerArr[userSelection - 1]) {
+        console.log("Entered True");
         score.correct++;
-        answerToken = true;
+        //answerToken = true;
+        console.log(answerArr[userSelection - 1]);
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
-        score.incorrect++;
-        answerToken = false;
+        console.log("Entered False");
+        ++score.incorrect;
+        //answerToken = false;
       }
       validSelection = true;
       break;
     case "3":
-      console.log("entered case " + event.key);
-      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+      console.log("entered case " + userSelection);
+      if (answerArr[userSelection - 1]) {
+        console.log("Entered True");
         score.correct++;
-        answerToken = true;
+        //answerToken = true;
+        console.log(answerArr[userSelection - 1]);
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
+        console.log("Entered False");
         score.incorrect++;
-        answerToken = false;
+        //answerToken = false;
       }
-      
+
       validSelection = true;
       break;
     case "4":
-      console.log("entered case " + event.key);
-      if (Object.values(quizArr[i].answer)[userSelection - 1]) {
+      console.log("entered case " + userSelection);
+      if (answerArr[userSelection - 1]) {
+        console.log("Entered True");
         score.correct++;
-        answerToken = true;
+        //answerToken = true;
+        console.log(answerArr[userSelection - 1]);
         //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
       } else {
+        console.log("Entered False");
         score.incorrect++;
-        answerToken = false;
+        //answerToken = false;
       }
       validSelection = true;
       break;
@@ -275,91 +277,96 @@ function answerSelection(event) {
       console.log("error");
   }
 
-  console.log("Score: " + score.correct + ", " + score.incorrect);
+  // console.log("Score: " + score.correct + ", " + score.incorrect);
 
   if (validSelection) {
-    if (i + 1 < quizArr.length) {
-      nextQuestion(i + 1);
-      setAnswerFeedbackTimer(answerToken);
+    if (questionIndex + 1 < quizArr.length) {
+      console.log("do we go here at end?");
+      nextQuestion(questionIndex + 1);
+      //setAnswerFeedbackTimer(answerToken);
     } else {
-      getScreen("quiz", "player-info");
-      score.timeLeft = secondsLeft/100;
       gameOver = true;
     }
   }
 }
 
-function setAnswerFeedbackTimer(answerToken) {
+// function setAnswerFeedbackTimer(answerToken) {
+//   var timerID = setInterval(function () {
+//     var feedbackEl = document.getElementById("feedback");
 
-  var timerID = setInterval(function() {
-  var feedbackEl = document.getElementById('feedback');
+//     answerFeedbackTimer--;
+//     if (answerToken) {
+//       feedbackEl.textContent = "Correct!";
+//       feedbackEl.removeAttribute("color");
+//       feedbackEl.setAttribute("style", "color:green");
+//     } else {
+//       feedbackEl.textContent = "Incorrect!";
+//       feedbackEl.removeAttribute("color");
+//       feedbackEl.setAttribute("style", "color:red");
+//     }
 
-
-answerFeedbackTimer--;
-if (answerToken) {
-  feedbackEl.textContent = "Correct!";
-  feedbackEl.removeAttribute("color");
-  feedbackEl.setAttribute("style", "color:green");
-}
-else {
-  feedbackEl.textContent = "Incorrect!";
-  feedbackEl.removeAttribute("color");
-  feedbackEl.setAttribute("style", "color:red");
-}
-
-if (answerFeedbackTimer === 0) {
-clearInterval(timerID)
-feedbackEl.textContent ='';
-}
-
-  }, 1000)
- 
-
-}
+//     if (answerFeedbackTimer === 0) {
+//       clearInterval(timerID);
+//       feedbackEl.textContent = "";
+//     }
+//   }, 1000);
+// }
 
 function displayResults() {
-  var userScore = score.timeLeft + (score.correct / (score.incorrect + 1));
+  //calc score
+  var userScore = score.correct - score.incorrect / (20-score.timeLeft);
+  //make score look good
   userScore = userScore.toFixed(3);
 
-console.log("THis SHOulD be Your SCorE :::=", userScore)
-console.log("THis SHOulD be Your SCorE :::=", userScore.toString())
-  var resultsEl = document.getElementById("results")
-  var userScoreEl = document.getElementById("userScore")
+  //find element
+  var resultsEl = document.getElementById("results");
+  //find element
+  var userScoreEl = document.getElementById("userScore");
+  //display score
   userScoreEl.textContent = "Your Score " + userScore.toString();
 
-  for(var values in score) {
-    var tempEl = document.createElement('p');
+  //for each value in score object
+  for (var values in score) {
+    //create p element
+    var tempEl = document.createElement("p");
+    //add text content
     tempEl.textContent = values + ": " + score[values];
+    //display score
     resultsEl.appendChild(tempEl);
   }
 
-
-
-   var timerEl = document.getElementById("timer");
-   timerEl.classList.replace("visible", "invisible");
-
-  window.removeEventListener("keydown", answerSelection);
-document.getElementById("a1").removeEventListener("click", answerSelection);
-document.getElementById("a2").removeEventListener("click", answerSelection);
-document.getElementById("a3").removeEventListener("click", answerSelection);
-document.getElementById("a4").removeEventListener("click", answerSelection);
-
+  //find element
+  var timerEl = document.getElementById("timer");
+  //hide timer
+  timerEl.classList.replace("visible", "invisible");
 }
 
-window.addEventListener("keydown", answerSelection);
-document.getElementById("a1").addEventListener("click", answerSelection);
-document.getElementById("a2").addEventListener("click", answerSelection);
-document.getElementById("a3").addEventListener("click", answerSelection);
-document.getElementById("a4").addEventListener("click", answerSelection);
+function removeEars() {
+  window.removeEventListener("keydown", answerSelection);
+  document.getElementById("a1").removeEventListener("click", answerSelection);
+  document.getElementById("a2").removeEventListener("click", answerSelection);
+  document.getElementById("a3").removeEventListener("click", answerSelection);
+  document.getElementById("a4").removeEventListener("click", answerSelection);
+}
 
-function buttonUtility() {
+function addEars() {
+  window.addEventListener("keydown", answerSelection);
+  document.getElementById("a1").addEventListener("click", answerSelection);
+  document.getElementById("a2").addEventListener("click", answerSelection);
+  document.getElementById("a3").addEventListener("click", answerSelection);
+  document.getElementById("a4").addEventListener("click", answerSelection);
+}
+  function buttonUtility() {
   var myNodeList = document.querySelectorAll("button");
 
   myNodeList.forEach((el) => {
     el.addEventListener("click", setScreen);
   });
-}
+  }
 
-  document.getElementById("navlink-lb").addEventListener("click", setScreen)
+  document.getElementById("navlink_home").addEventListener("click", setScreen);
+  document.getElementById("navlink_lb").addEventListener("click", setScreen);
+  document.getElementById("navlink_htp").addEventListener("click", setScreen);
 
 buttonUtility();
+addEars();

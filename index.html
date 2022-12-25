@@ -11,22 +11,31 @@
 <body>
     <head>
         <nav>
-            <i jump-to="landing-page" class="fa fa-home" style="font-size:48px"></i>
+            <i jump_to="landing_page" id="navlink_home" class="fa fa-home" style="font-size:48px"></i>
             <ul>
-                <li jump-to="leader-board" id="navlink-lb">Leader Board</li>
-                <li jump-to="how-to-play" id="navlink-htp">How to Play</li>
+                <li jump_to="leader_board" id="navlink_lb">Leader Board</li>
+                <li jump_to="htp" id="navlink_htp">How to Play</li>
             </ul>
         </nav>
     </head>
-      <section id="controls" class="invisible">
+      <section id="htp" class="invisible">
         <h2>How to Play</h2>
+
+        <ul>
+            <li>Start the quiz from the homepage</li>
+            <li>The quiz is timed</li>
+            <li>View score after the test</li>
+            <li>Submit your info for the Leaderboard</li>
+            <li>View top scores for this device</li>
+        </ul>
+ 
     </section>
 
-        <section id="landing-page" class="visible">
+        <section id="landing_page" class="visible">
             <h1>Quiz Game</h1>
             <h3>Test your coding knowledge!</h6>
 
-            <button jump-to="quiz">PLAY</button>
+            <button jump_to="quiz">PLAY</button>
         </section>
 
         <section id="quiz" class="invisible">
@@ -43,7 +52,7 @@
         </section>
   
 
-    <section id="player-info" class="invisible">
+    <section id="player_info" class="invisible">
         <article id="results">
         <h2 id="userScore"></h2>
     </article>
@@ -53,7 +62,7 @@
           </form>
     </section>
 
-    <section id="leader-board" class="invisible">
+    <section id="leader_board" class="invisible">
         <h2>Leader Board</h2>
 
         <ol id="score-list"></ol>
