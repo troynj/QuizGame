@@ -129,7 +129,7 @@ function getScreen() {
   var jump_fromEl = document.getElementById(driveWEl.jump_from);
   var jump_toEl = document.getElementById(driveWEl.jump_to);
   var jump_fromID = jump_fromEl.getAttribute("id");
-  var jump_toID = jump_toEl.getAttribute("id") ;
+  var jump_toID = jump_toEl.getAttribute("id");
 
   jump_fromEl.classList.replace("visible", "invisible");
   jump_toEl.classList.replace("invisible", "visible");
@@ -143,14 +143,13 @@ function getScreen() {
     nextQuestion(0);
   }
 
-  if(jump_toID === "player_info"){
-
-    if (secondsLeft > 0 && (score.correct + score.incorrect !== quizArr.length)) {
+  if (jump_toID === "player_info") {
+    if (secondsLeft > 0 && score.correct + score.incorrect !== quizArr.length) {
       score.correct = 0;
       score.incorrect = 0;
       score.timeLeft = 0;
     }
-    displayResults()
+    displayResults();
   }
 }
 
@@ -161,9 +160,9 @@ function setTimer() {
   var timerID = setInterval(function () {
     secondsLeft--;
     if (secondsLeft < 1000) {
-      timerEl.textContent = "0:0" + (secondsLeft/100).toFixed(2);
+      timerEl.textContent = "0:0" + (secondsLeft / 100).toFixed(2);
       timerEl.setAttribute("style", "color:red");
-    } else timerEl.textContent = "0:" + (secondsLeft/100).toFixed(2);
+    } else timerEl.textContent = "0:" + (secondsLeft / 100).toFixed(2);
 
     if (secondsLeft === 0 || gameOver) {
       console.log("enteredHERE");
@@ -273,6 +272,10 @@ function answerSelection(event) {
       }
       validSelection = true;
       break;
+    // case 'Enter':
+    // // var btnEl = document.querySelector(button)
+    // setScreen(event)
+
     default:
       console.log("error");
   }
@@ -314,7 +317,7 @@ function answerSelection(event) {
 
 function displayResults() {
   //calc score
-  var userScore = score.correct - score.incorrect / (20-score.timeLeft);
+  var userScore = (score.correct - score.incorrect) / (20 - score.timeLeft);
   //make score look good
   userScore = userScore.toFixed(3);
 
@@ -350,23 +353,45 @@ function removeEars() {
 }
 
 function addEars() {
-  window.addEventListener("keydown", answerSelection);
+  window.addEventListener("keydown", function (event) {
+    var currentPage = document.querySelector(".visible").getAttribute("id");
+
+    switch (currentPage) {
+      case "htp":
+        break;
+      case "landing_page":
+        if (event.key === 'Enter') {
+          driveWEl.jump_from = currentPage;
+          driveWEl.jump_to = 'quiz';
+          getScreen()
+        }
+        break;
+      case "quiz":
+        answerSelection(event)
+        break;
+      case "player_info":
+        break;
+      case "leader_board":
+        break;
+    }
+
+  });
   document.getElementById("a1").addEventListener("click", answerSelection);
   document.getElementById("a2").addEventListener("click", answerSelection);
   document.getElementById("a3").addEventListener("click", answerSelection);
   document.getElementById("a4").addEventListener("click", answerSelection);
 }
-  function buttonUtility() {
+function buttonUtility() {
   var myNodeList = document.querySelectorAll("button");
 
   myNodeList.forEach((el) => {
     el.addEventListener("click", setScreen);
   });
-  }
+}
 
-  document.getElementById("navlink_home").addEventListener("click", setScreen);
-  document.getElementById("navlink_lb").addEventListener("click", setScreen);
-  document.getElementById("navlink_htp").addEventListener("click", setScreen);
+document.getElementById("navlink_home").addEventListener("click", setScreen);
+document.getElementById("navlink_lb").addEventListener("click", setScreen);
+document.getElementById("navlink_htp").addEventListener("click", setScreen);
 
 buttonUtility();
 addEars();
