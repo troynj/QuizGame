@@ -102,7 +102,7 @@ var quizArr = [
   },
 ];
 
-var score = {
+var scoreObj = {
   correct: 0,
   incorrect: 0,
   timeLeft: 0,
@@ -144,12 +144,16 @@ function getScreen() {
   }
 
   if (jump_toID === "player_info") {
-    if (secondsLeft > 0 && score.correct + score.incorrect !== quizArr.length) {
-      score.correct = 0;
-      score.incorrect = 0;
-      score.timeLeft = 0;
+    if (secondsLeft > 0 && scoreObj.correct + scoreObj.incorrect !== quizArr.length) {
+      scoreObj.correct = 0;
+      scoreObj.incorrect = 0;
+      scoreObj.timeLeft = 0;
     }
     displayResults();
+  }
+
+  if(jump_toID === 'leader_board') {
+    populateLeaderboard()
   }
 }
 
@@ -165,12 +169,11 @@ function setTimer() {
     } else timerEl.textContent = "0:" + (secondsLeft / 100).toFixed(2);
 
     if (secondsLeft === 0 || gameOver) {
-      console.log("enteredHERE");
       clearInterval(timerID);
       removeEars();
       driveWEl.jump_from = "quiz";
       driveWEl.jump_to = "player_info";
-      score.timeLeft = secondsLeft / 100;
+      scoreObj.timeLeft = secondsLeft / 100;
       secondsLeft = 0;
       gameOver = true;
       getScreen();
@@ -179,7 +182,6 @@ function setTimer() {
 }
 
 function nextQuestion(i) {
-  console.log("entered", i);
   var questionEl = document.getElementById("question");
   questionEl.textContent = quizArr[i].question;
 
@@ -190,15 +192,10 @@ function nextQuestion(i) {
 }
 
 function answerSelection(event) {
-  // console.log(event.key);
-  // console.log("e" + typeof event.key);
-  // console.log(event.target.getAttribute('id').split(''));
   var validSelection = false;
   //var answerToken = new Boolean();
   var currentQuestion = document.getElementById("question").textContent;
 
-  // console.log("cur q", currentQuestion);
-  // console.log("quizArr[i].question: ", quizArr[0].question);
   var questionIndex = 0;
   while (
     quizArr[questionIndex].question !== currentQuestion &&
@@ -208,67 +205,40 @@ function answerSelection(event) {
   }
   // event.target
   var answerArr = Object.values(quizArr[questionIndex].answer);
-  console.log(answerArr);
   var userSelection = event.key || event.target.getAttribute("id").split("")[1];
 
   switch (userSelection) {
     case "1":
-      console.log("entered case " + userSelection);
       if (answerArr[userSelection - 1]) {
-        ++score.correct;
-        //answerToken = true;
-        console.log(answerArr[userSelection - 1]);
-        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1]);
+        ++scoreObj.correct;
       } else {
-        console.log("Entered False");
-        score.incorrect++;
-        answerToken = false;
+        scoreObj.incorrect++;
       }
       validSelection = true;
       break;
     case "2":
-      console.log("entered case " + userSelection);
       if (answerArr[userSelection - 1]) {
-        console.log("Entered True");
-        score.correct++;
-        //answerToken = true;
-        console.log(answerArr[userSelection - 1]);
-        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+        scoreObj.correct++;
       } else {
-        console.log("Entered False");
-        ++score.incorrect;
-        //answerToken = false;
+        ++scoreObj.incorrect;
       }
       validSelection = true;
       break;
     case "3":
-      console.log("entered case " + userSelection);
       if (answerArr[userSelection - 1]) {
-        console.log("Entered True");
-        score.correct++;
-        //answerToken = true;
-        console.log(answerArr[userSelection - 1]);
-        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+        scoreObj.correct++;
+   
       } else {
-        console.log("Entered False");
-        score.incorrect++;
-        //answerToken = false;
+        scoreObj.incorrect++;
       }
 
       validSelection = true;
       break;
     case "4":
-      console.log("entered case " + userSelection);
       if (answerArr[userSelection - 1]) {
-        console.log("Entered True");
-        score.correct++;
-        //answerToken = true;
-        console.log(answerArr[userSelection - 1]);
-        //console.log("The answer is " + Object.keys(quizArr[i].answer)[event.key-1])
+        scoreObj.correct++;
       } else {
-        console.log("Entered False");
-        score.incorrect++;
-        //answerToken = false;
+        scoreObj.incorrect++;
       }
       validSelection = true;
       break;
@@ -280,11 +250,8 @@ function answerSelection(event) {
       console.log("error");
   }
 
-  // console.log("Score: " + score.correct + ", " + score.incorrect);
-
   if (validSelection) {
     if (questionIndex + 1 < quizArr.length) {
-      console.log("do we go here at end?");
       nextQuestion(questionIndex + 1);
       //setAnswerFeedbackTimer(answerToken);
     } else {
@@ -317,23 +284,23 @@ function answerSelection(event) {
 
 function displayResults() {
   //calc score
-  var userScore = (score.correct - score.incorrect) / (20 - score.timeLeft);
+  var userScore = calcScore(scoreObj.correct, scoreObj.incorrect, scoreObj.timeLeft);
   //make score look good
-  userScore = userScore.toFixed(3);
+   userScore = userScore.toFixed(2)
 
   //find element
   var resultsEl = document.getElementById("results");
   //find element
-  var userScoreEl = document.getElementById("userScore");
+  var userScoreEl = document.getElementById("user_score");
   //display score
   userScoreEl.textContent = "Your Score " + userScore.toString();
 
   //for each value in score object
-  for (var values in score) {
+  for (var values in scoreObj) {
     //create p element
     var tempEl = document.createElement("p");
     //add text content
-    tempEl.textContent = values + ": " + score[values];
+    tempEl.textContent = values + ": " + scoreObj[values];
     //display score
     resultsEl.appendChild(tempEl);
   }
@@ -342,6 +309,56 @@ function displayResults() {
   var timerEl = document.getElementById("timer");
   //hide timer
   timerEl.classList.replace("visible", "invisible");
+}
+
+function calcScore(_correct, _incorrect, _timeLeft) {
+
+  return (_correct - _incorrect) / (20 - _timeLeft);
+
+}
+
+function saveScore() {
+  var userNameEl = document.getElementById("name")
+  var userScoreEl = document.getElementById('user_score')
+
+  var userScore = userScoreEl.textContent.split(' ')
+  //console.log(userScore(2))
+
+  localStorage.setItem(userNameEl.value, userScore[2])  
+}
+
+function submitUserScore(event) {
+  var currentPage = document.querySelector(".visible").getAttribute("id");
+var inputFieldEl = document.getElementById('name')
+console.log(inputFieldEl)
+   event.preventDefault();
+   if(inputFieldEl.value) {
+          saveScore();
+          driveWEl.jump_from = currentPage;
+          driveWEl.jump_to = 'leader_board';
+          getScreen()
+   }
+}
+
+function populateLeaderboard() {
+  
+var leaderboardArr = Object.entries(localStorage);
+console.log(leaderboardArr)
+
+leaderboardArr.sort((a, b) => b[1] - a[1])
+//console.log(leaderboardArr)
+
+var listContainerEl = document.getElementById('score_list')
+listContainerEl.innerHTML = '';
+leaderboardArr.forEach((el) => {
+  console.log(el)
+var temp = document.createElement('li')
+temp.innerHTML = el[0] + " - " + el[1];
+listContainerEl.append(temp);
+
+
+})
+
 }
 
 function removeEars() {
@@ -381,17 +398,22 @@ function addEars() {
   document.getElementById("a3").addEventListener("click", answerSelection);
   document.getElementById("a4").addEventListener("click", answerSelection);
 }
-function buttonUtility() {
-  var myNodeList = document.querySelectorAll("button");
+// function buttonUtility() {
+//   var myNodeList = document.querySelectorAll("button");
 
-  myNodeList.forEach((el) => {
-    el.addEventListener("click", setScreen);
-  });
-}
+//   myNodeList.forEach((el) => {
+//     el.addEventListener("click", setScreen);
+//   });
+// }
 
 document.getElementById("navlink_home").addEventListener("click", setScreen);
 document.getElementById("navlink_lb").addEventListener("click", setScreen);
 document.getElementById("navlink_htp").addEventListener("click", setScreen);
 
-buttonUtility();
+document.getElementById('play_btn').addEventListener("click", setScreen)
+
+document.getElementById("submit_user_results").addEventListener("click", submitUserScore)
+
+//buttonUtility();
 addEars();
+populateLeaderboard();
