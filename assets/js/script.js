@@ -113,7 +113,7 @@ var driveWEl = {
   jump_to: "",
 };
 var answerFeedbackTimer = 3000;
-var secondsLeft = 200;
+var secondsLeft = 2000;
 var gameOver = false;
 
 function setScreen(event) {
@@ -160,7 +160,7 @@ function setTimer() {
 
   var timerID = setInterval(function () {
     secondsLeft--;
-    if (secondsLeft < 10) {
+    if (secondsLeft < 1000) {
       timerEl.textContent = "0:0" + (secondsLeft/100).toFixed(2);
       timerEl.setAttribute("style", "color:red");
     } else timerEl.textContent = "0:" + (secondsLeft/100).toFixed(2);
