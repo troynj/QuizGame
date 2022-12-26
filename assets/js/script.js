@@ -112,7 +112,7 @@ var driveWEl = {
   jump_from: "",
   jump_to: "",
 };
-var answerFeedbackTimer = 3000;
+var answerFeedbackTimer = 30;
 var secondsLeft = 2000;
 var gameOver = false;
 
@@ -161,7 +161,7 @@ function setTimer() {
   var timerEl = document.getElementById("timer");
   timerEl.classList.replace("invisible", "visible");
 
-  var timerID = setInterval(function () {
+  var intervalID = setInterval(function () {
     secondsLeft--;
     if (secondsLeft < 1000) {
       timerEl.textContent = "0:0" + (secondsLeft / 100).toFixed(2);
@@ -169,7 +169,7 @@ function setTimer() {
     } else timerEl.textContent = "0:" + (secondsLeft / 100).toFixed(2);
 
     if (secondsLeft === 0 || gameOver) {
-      clearInterval(timerID);
+      clearInterval(intervalID);
       removeEars();
       driveWEl.jump_from = "quiz";
       driveWEl.jump_to = "player_info";
@@ -193,7 +193,7 @@ function nextQuestion(i) {
 
 function answerSelection(event) {
   var validSelection = false;
-  //var answerToken = new Boolean();
+  var answerToken = new Boolean();
   var currentQuestion = document.getElementById("question").textContent;
 
   var questionIndex = 0;
@@ -210,42 +210,44 @@ function answerSelection(event) {
   switch (userSelection) {
     case "1":
       if (answerArr[userSelection - 1]) {
-        ++scoreObj.correct;
+        scoreObj.correct++;
+        answerToken = true;
       } else {
         scoreObj.incorrect++;
+        answerToken = false;
       }
       validSelection = true;
       break;
     case "2":
       if (answerArr[userSelection - 1]) {
         scoreObj.correct++;
+        answerToken = true;
       } else {
-        ++scoreObj.incorrect;
+        scoreObj.incorrect++;
+        answerToken = false;
       }
       validSelection = true;
       break;
     case "3":
       if (answerArr[userSelection - 1]) {
         scoreObj.correct++;
-   
+        answerToken = true;
       } else {
         scoreObj.incorrect++;
+        answerToken = false;
       }
-
       validSelection = true;
       break;
     case "4":
       if (answerArr[userSelection - 1]) {
         scoreObj.correct++;
+        answerToken = true;
       } else {
         scoreObj.incorrect++;
+        answerToken = false;
       }
       validSelection = true;
       break;
-    // case 'Enter':
-    // // var btnEl = document.querySelector(button)
-    // setScreen(event)
-
     default:
       console.log("error");
   }
@@ -253,34 +255,38 @@ function answerSelection(event) {
   if (validSelection) {
     if (questionIndex + 1 < quizArr.length) {
       nextQuestion(questionIndex + 1);
-      //setAnswerFeedbackTimer(answerToken);
+      setAnswerFeedbackTimer(answerToken);
     } else {
       gameOver = true;
     }
   }
 }
 
-// function setAnswerFeedbackTimer(answerToken) {
-//   var timerID = setInterval(function () {
-//     var feedbackEl = document.getElementById("feedback");
+function setAnswerFeedbackTimer(answerToken) {
+   var feedbackEl = document.getElementById("feedback");
+   var opacity = 100;
 
-//     answerFeedbackTimer--;
-//     if (answerToken) {
-//       feedbackEl.textContent = "Correct!";
-//       feedbackEl.removeAttribute("color");
-//       feedbackEl.setAttribute("style", "color:green");
-//     } else {
-//       feedbackEl.textContent = "Incorrect!";
-//       feedbackEl.removeAttribute("color");
-//       feedbackEl.setAttribute("style", "color:red");
-//     }
+  var intervalID = setInterval(function () {
+console.log(answerFeedbackTimer)
+    answerFeedbackTimer--;
+    if (answerToken) {
+      feedbackEl.textContent = "Correct!";
+      feedbackEl.removeAttribute("color");
+      feedbackEl.setAttribute("style", "color:green; opacity:" + opacity + "%");
+    } else {
+      feedbackEl.textContent = "Incorrect!";
+      feedbackEl.removeAttribute("color");
+      feedbackEl.setAttribute("style", "color:red; opacity:" + opacity + "%");
+    }
+    opacity -= 3;
 
-//     if (answerFeedbackTimer === 0) {
-//       clearInterval(timerID);
-//       feedbackEl.textContent = "";
-//     }
-//   }, 1000);
-// }
+     if (answerFeedbackTimer === 0) {
+       clearInterval(intervalID);
+      feedbackEl.textContent = "";
+      answerFeedbackTimer = 30
+     }
+  }, 30);
+}
 
 function displayResults() {
   //calc score

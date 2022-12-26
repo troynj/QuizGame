@@ -9,8 +9,9 @@ body {
 section {
   background-color: #e7e5e5;
   border: 5px solid black;
-  width: fit-content;
+  width: 30%;
   padding: 30px 300px 100px 300px;
+ 
 }
 nav {
     width: 100vw;
