@@ -412,7 +412,10 @@ function addEars() {
 //   });
 // }
 
-document.getElementById("navlink_home").addEventListener("click", setScreen);
+//document.getElementById("navlink_home").addEventListener("click", setScreen);
+//setScreen function works, but would have to add code to reset certain values upon visiting the home page
+//an easier way to have values reset is to reload page when the home button is pressed
+document.getElementById("navlink_home").addEventListener("click", function() {location.reload()});
 document.getElementById("navlink_lb").addEventListener("click", setScreen);
 document.getElementById("navlink_htp").addEventListener("click", setScreen);
 
